@@ -1,8 +1,3 @@
-<!-- begin merge (remove this line to resolve the conflict) -->
-~ Begin Remote
-# IotHub
-Use ELK to Built a IotHub
-~ End Remote
 # 构建IoTHub及智能应用
 
 ## 项目背景
