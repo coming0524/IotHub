@@ -51,7 +51,7 @@ Java8下载地址，请下载Windows x64版，目前为（jdk-8u171-windows-x64.
 http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html   
 按默认安装。分别在虚拟Server1到3中安装。
 
-### 第二部ElasticSearch安装
+### 第二步ElasticSearch安装
 1.安装ELK首先需要到   
 https://www.elastic.co/cn/products   
 下载软件。目前为6.2.4版本建议使用MSI版本软件包
@@ -133,6 +133,41 @@ cmd进入E:\elasticsearch-5.4.1\elasticsearch-head-master文件夹
 6.按上述2-3内容，在server2，与server3中安装。其他ES集群节点
 其他节点node.data: true，node.ingest: true，node.master: true。
 但是head插件用配置不用追加。
+
+### ElasticSearch介绍
+使用ElasticSearch搜索引擎，如图所示，从集群（Cluster），节点（Node），索引（Index），分片（Shard）的4个内容   
+
+![012]
+
+[012]: images/012.JPG "012" { width:auto; max-width:90% }
+●集群（Cluster）:
+目的:建立一组拥有相同集群名的节点集合，它们协同作业并共享数据并提供
+故障转移和弹性扩展，一个集群也可以由一个单一节点创建。   
+
+●节点（Node）:
+目的 :运行Elasticsearch的实例。节点间通过网络进行通讯协作作业（默认是TCP 9300端口）。   
+集群中会有一台包涵Master模式的节点，当Master模式节点故障后，会由可升级Master节点中选择出来，并提升为Master。   
+·默认节点（包括可升级Master，存储Data，聚合Query）   
+·Master节点:集群中用于控制其他节点的工作。   
+·数据节点:仅存放分片数据的节点   
+·聚合查询节点:对外部应用程序的查询进行响应。无数据和Master   
+
+●索引（Index）:   
+目的:存储关联数据的地方。实际上，索引只是一个用来指向一个或多个分片(shards)的逻辑命名空间。   
+
+●分片（Shard）:   
+目的 :提供 最小级别工作单位,它只是保存了索引中所有数据的一部分。分片作为数据容器，日志数据存储在分片之中，然后分片被动态的分配到集群的各个节点，随着集群的扩容或缩小，Elasticsearch会将分片自动在节点中进行迁移，保证集群的动态平衡。
+针对每个索引，分为0-4的5个分片，且有1组主分片与1组复制片。也就是供有10个分片，分在在3台主机中。   
+其原因为分片按特性会分为:   
+·主分片(primary shard) : 索引创建时会将主分片的数量固定了，但是复制分片的数量可以之后进行调整。   
+·复制分片(replica shard): 复制分片是主分片的副本，当主分片所在主机故障时，可以继续提供读请求，如搜索或者从别的分片中读取文档。
+通过触发分片访问的概率，来提升ElasticSearch集群的性能。   
+![013]
+
+[013]: images/013.JPG "013" { width:auto; max-width:90% }
+
+
+
 
 
 
