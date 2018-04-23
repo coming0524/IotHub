@@ -103,11 +103,11 @@ https://blog.csdn.net/u012270682/article/details/72934270
 elasticsearch 5以上版本安装head需要安装node和grunt   
 下载地址：https://nodejs.org/en/download/    根据自己系统下载相应的msi，双击安装。   
 
-确认node版本，并安装grunt，用npm install -g grunt -cli命令 
+确认node版本，并安装grunt，用npm install -g grunt -cli命令   
 ![007]
 
 [007]: images/007.JPG "007" { width:auto; max-width:90% }
-确认grunt版本，用grunt -version命令
+确认grunt版本，用grunt -version命令   
 ![008]
 
 [008]: images/008.JPG "008" { width:auto; max-width:90% }
@@ -121,30 +121,35 @@ http.cors.allow-origin: "*" //head插件用
 
 [011]: images/011.JPG "011" { width:auto; max-width:90% }
 cmd进入E:\elasticsearch-5.4.1\elasticsearch-head-master文件夹   
-执行 npm install
+执行 npm install   
 ![009]
 
 [009]: images/009.JPG "009" { width:auto; max-width:90% }
-安装完成查看结果192.168.1.201:9100确认结果。目前没数据的话，如图
+安装完成查看结果192.168.1.201:9100确认结果。目前没数据的话，如图   
 ![010]
 
 [010]: images/010.JPG "010" { width:auto; max-width:90% }
+安装完成执行grunt server 或者npm run start   
+或head解压缩目录下创建该命令bat文件
+
 
 6.按上述2-3内容，在server2，与server3中安装。其他ES集群节点
 其他节点node.data: true，node.ingest: true，node.master: true。
 但是head插件用配置不用追加。
 
 ### ElasticSearch介绍
-使用ElasticSearch搜索引擎，如图所示，从集群（Cluster），节点（Node），索引（Index），分片（Shard）的4个内容   
+使用ElasticSearch搜索引擎，如图所示，从集群（Cluster），节点（Node），索引（Index），分片（Shard）的4个内容      
 
 ![012]
 
 [012]: images/012.JPG "012" { width:auto; max-width:90% }
-●集群（Cluster）:
+●集群（Cluster）:   
+集群就是一个或多个节点存储数据，其中一个节点为主节点，这个主节点是可以通过选举产生的，并提供跨节点的联合索引和搜索的功能。集群有一个唯一性标示的名字，默认是elasticsearch，集群名字很重要，每个节点是基于集群名字加入到其集群中的。因此，确保在不同环境中使用不同的集群名字。一个集群可以只有一个节点。强烈建议在配置elasticsearch时，配置成集群模式。   
 目的:建立一组拥有相同集群名的节点集合，它们协同作业并共享数据并提供
 故障转移和弹性扩展，一个集群也可以由一个单一节点创建。   
 
-●节点（Node）:
+●节点（Node）:   
+节点就是一台单一的服务器，是集群的一部分，存储数据并参与集群的索引和搜索功能。像集群一样，节点也是通过名字来标识，默认是在节点启动时随机分配的字符名。当然啦，你可以自己定义。该名字也蛮重要的，在集群中用于识别服务器对应的节点   
 目的 :运行Elasticsearch的实例。节点间通过网络进行通讯协作作业（默认是TCP 9300端口）。   
 集群中会有一台包涵Master模式的节点，当Master模式节点故障后，会由可升级Master节点中选择出来，并提升为Master。   
 ·默认节点（包括可升级Master，存储Data，聚合Query）   
@@ -152,20 +157,134 @@ cmd进入E:\elasticsearch-5.4.1\elasticsearch-head-master文件夹
 ·数据节点:仅存放分片数据的节点   
 ·聚合查询节点:对外部应用程序的查询进行响应。无数据和Master   
 
-●索引（Index）:   
+●索引（Index）:  
+索引是有几分相似属性的一系列文档的集合。如nginx日志索引、syslog索引等等。索引是由名字标识，名字必须全部小写。这个名字用来进行索引、搜索、更新和删除文档的操作。 
+索引相对于关系型数据库的库。   
 目的:存储关联数据的地方。实际上，索引只是一个用来指向一个或多个分片(shards)的逻辑命名空间。   
 
+●类型（Type）
+在一个索引中，可以定义一个或多个类型。类型是一个逻辑类别还是分区完全取决于你。通常情况下，一个类型被定于成具有一组共同字段的文档。如ttlsa运维生成时间所有的数据存入在一个单一的名为logstash-ttlsa的索引中，同时，定义了用户数据类型，帖子数据类型和评论类型。 
+类型相对于关系型数据库的表。
+
+●文档 
+文档是信息的基本单元，可以被索引的。文档是以JSON格式表现的。 
+在类型中，可以根据需求存储多个文档。 
+虽然一个文档在物理上位于一个索引，实际上一个文档必须在一个索引内被索引和分配一个类型。 
+文档相对于关系型数据库的列。
+
+
 ●分片（Shard）:   
+在实际情况下，索引存储的数据可能超过单个节点的硬件限制。如一个十亿文档需1TB空间可能不适合存储在单个节点的磁盘上，或者从单个节点搜索请求太慢了。为了解决这个问题，elasticsearch提供将索引分成多个分片的功能。当在创建索引时，可以定义想要分片的数量。每一个分片就是一个全功能的独立的索引，可以位于集群中任何节点上。 
+分片的两个最主要原因：    
+a、水平分割扩展，增大存储量    
+b、分布式并行跨分片操作，提高性能和吞吐量    
+分布式分片的机制和搜索请求的文档如何汇总完全是有elasticsearch控制的，这些对用户而言是透明的。 
+网络问题等等其它问题可以在任何时候不期而至，为了健壮性，强烈建议要有一个故障切换机制，无论何种故障以防止分片或者节点不可用。 
+为此，elasticsearch让我们将索引分片复制一份或多份，称之为分片副本或副本。    
+副本也有两个最主要原因：  
+高可用性，以应对分片或者节点故障。出于这个原因，分片副本要在不同的节点上。    
+提供性能，增大吞吐量，搜索可以并行在所有副本上执行。    
+总之，每一个索引可以被分成多个分片。索引也可以有0个或多个副本。复制后，每个索引都有主分片(母分片)和复制分片(复制于母分片)。分片和副本数量可以在每个索引被创建时定义。索引创建后，可以在任何时候动态的更改副本数量，但是，不能改变分片数。 
+默认情况下，elasticsearch为每个索引分片5个主分片和1个副本，这就意味着集群至少需要2个节点。索引将会有5个主分片和5个副本(1个完整副本)，每个索引总共有10个分片。 
+每个elasticsearch分片是一个Lucene索引。一个单个Lucene索引有最大的文档数LUCENE-5843, 文档数限制为2147483519(MAX_VALUE – 128)。 可通过_cat/shards来监控分片大小。   
 目的 :提供 最小级别工作单位,它只是保存了索引中所有数据的一部分。分片作为数据容器，日志数据存储在分片之中，然后分片被动态的分配到集群的各个节点，随着集群的扩容或缩小，Elasticsearch会将分片自动在节点中进行迁移，保证集群的动态平衡。
 针对每个索引，分为0-4的5个分片，且有1组主分片与1组复制片。也就是供有10个分片，分在在3台主机中。   
 其原因为分片按特性会分为:   
 ·主分片(primary shard) : 索引创建时会将主分片的数量固定了，但是复制分片的数量可以之后进行调整。   
 ·复制分片(replica shard): 复制分片是主分片的副本，当主分片所在主机故障时，可以继续提供读请求，如搜索或者从别的分片中读取文档。
 通过触发分片访问的概率，来提升ElasticSearch集群的性能。   
+
 ![013]
 
 [013]: images/013.JPG "013" { width:auto; max-width:90% }
 
+### 第三部LogStash安装
+1.将下载的LogStash文件解压缩到制定的目录中。同时在bin目录中，创建一个启动bat   
+C:\IotProject\Logstash\6.2.4\bin该目录下创建。
+Bat文件如下
+``` javascript
+logstash -f conf\IotProject.conf
+```
+其中 -f为执行conf文件。-e为直接执行命令行中的配置程序。一般用-f   
+
+2.创建conf配置文件。   
+（1）IotProject.conf
+``` javascript
+input {
+	tcp{
+		port => 5000
+		codec => json
+	}
+}
+ 
+#filter {
+
+	
+#}
+ 
+output {
+
+	elasticsearch{
+		hosts => ["192.168.1.201:9200","192.168.1.202:9200","192.168.1.203:9200"]
+		index => "persioncheck-%{+YYYY-MM-dd}"
+		document_type => "persioncheck"		
+	}
+
+}
+	
+```
+
+（2）debug用conf
+``` javascript
+input {
+	tcp{
+		port => 5000
+		codec => json
+	}
+}
+ 
+#filter {
+
+	
+#}
+ 
+output {
+	stdout{
+		codec => rubydebug
+	}
+}
+```
+
+
+2.使用nssm将logstash作为windows服务启动
+到http://www.nssm.cc/download 下载最新版本nssm并拷贝到项目目录。   
+参考 https://www.cnblogs.com/TianFang/p/7912648.html 设定logstash服务，nssm install logstash命令
+path为logstash刚才创建的bat文件。   
+Dependencies为依赖elasticsearch，并填写es的服务名称。
+
+### LogStash介绍
+Logstash日志管道工具进行构建。 使用其中的Input组件、Filter组件、Output组件作为构造块进行设计，
+``` javascript
+input {
+	tcp{
+		port => 5000 //TCP端口
+		codec => json //将数据转为json
+	}
+}
+
+output {
+	elasticsearch{
+		hosts => ["192.168.1.201:9200","192.168.1.202:9200","192.168.1.203:9200"] //写入到3台es服务器。IP都要
+		index => "persioncheck-%{+YYYY-MM-dd}" //索引的名称 - 日期
+		document_type => "persioncheck"	//文档类型名称
+	}
+
+}
+```
+
+内容可以参考URL
+
+https://www.cnblogs.com/moonlightL/p/7760512.html   
 
 
 
