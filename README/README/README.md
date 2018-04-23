@@ -15,4 +15,15 @@
 ## 项目内容
 会使用Elastic公司的三款开源工具来进行IoTHub的构建。Elastic提供Logstash，Elasticsearch，Kibana这3款开源工具。其中Logstash为数据收集，转换，传输的工具，Elasticsearch为数据存储，搜索，分析的工具，Kibana为数据可视化展示的工具。
 
+![001]
+
+[001]: images/001.JPG "001" { width:auto; max-width:90% }
+
+### 系统架构
+Elasticsearch是分布式数据库，所以建立多台服务器做ES集群。Logstash主要起到传输作用，构建并行服务器。Kibana主要用于显示，构建单台。智能分析通过Python来进行。传感器部分通过Raspberry Pi 3等
+
+![002]
+
+[002]: images/002.JPG "002" { width:auto; max-width:90% }
+
 
