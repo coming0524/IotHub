@@ -13,5 +13,6 @@
 
 
 ## 项目内容
-会使用Elastic公司的三款开源工具来进行IoTHub的构建。如图2-3所示，Elastic提供Logstash，Elasticsearch，Kibana这3款开源工具。其中Logstash为数据收集，转换，传输的工具，Elasticsearch为数据存储，搜索，分析的工具，Kibana为数据可视化展示的工具。
+会使用Elastic公司的三款开源工具来进行IoTHub的构建。Elastic提供Logstash，Elasticsearch，Kibana这3款开源工具。其中Logstash为数据收集，转换，传输的工具，Elasticsearch为数据存储，搜索，分析的工具，Kibana为数据可视化展示的工具。
+
 
